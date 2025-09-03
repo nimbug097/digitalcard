@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Wedding Invitation</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Gulzar&display=swap");
+      .gulzar-regular {
+        font-family: "Gulzar", serif;
+      }
+      /* Base styles for the containers */
+      #intro-container,
+      #final-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        text-align: center;
+
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+      }
+
+      /* Base styles for the text elements themselves */
+      .intro-text,
+      .final-text {
+        font-size: 1.5rem;
+        margin: 10px 0;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+        text-align: center;
+      }
+
+      .st {
+        margin-top: -250px;
+      }
+      .nd {
+        margin-top: 25px;
+      }
+      .rd {
+        margin-top: 45px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      /* This class will be added by JavaScript to show text */
+      .show {
+        opacity: 1;
+      }
+
+      #invitation {
+        position: relative;
+        /* Optional: Set a min-height to prevent the canvas from collapsing */
+        min-height: 250px;
+      }
+      body {
+        direction: rtl;
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        color: #333;
+        background: #ffffff; /* subtle off-white instead of full photo */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* Photo background with margins */
+      .bg-canvas {
+        position: relative;
+        width: 90%; /* add left/right margin */
+        max-width: 1200px; /* keep it neat */
+        min-height: 90vh;
+        border-radius: 20px; /* rounded frame */
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Actual photo background */
+      .bg-canvas::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("./assets/vadim-paripa-PuXtB1B4zL8-unsplash (1).jpg")
+          no-repeat center center;
+        background-size: cover;
+        filter: blur(2px);
+        z-index: -1;
+      }
+
+      /* Invitation card */
+      .canvas {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(6px);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 600px;
+        margin: 100px 2vh;
+        position: relative;
+        box-shadow: 0 0 40px rgba(212, 163, 115, 0.5);
+        height: 60vh;
+      }
+
+      .show-and-stay {
+        position: static; /* Overrides absolute positioning */
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 10px auto; /* Adds space between the stacked elements */
+        opacity: 1; /* Makes it stay visible */
+      }
+      .flower {
+        position: absolute; /* Allows for precise placement */
+        bottom: 0; /* Places the image at the bottom of the container */
+        right: 0; /* Places the image at the right of the container */
+
+        width: 200px; /* Make it a little bigger */
+        height: auto; /* Maintain aspect ratio */
+        z-index: 1; /* Ensures it's on top of other elements */
+        color: #ffffff;
+      }
+      .flower-top-left {
+        top: 0;
+        left: 0;
+        bottom: auto;
+        right: auto;
+
+        transform: rotate(180deg); /* This is the new line */
+      }
+      .fade-in {
+        opacity: 0; /* Initially hide the flowers */
+        transition: opacity 2s ease-in; /* Add a smooth transition for the fade effect */
+      }
+      /* Add this new CSS rule */
+      .canvas.canvas-hidden {
+        opacity: 0;
+        transition: opacity 2s ease-in;
+      }
+
+      .canvas.canvas-show {
+        opacity: 0.7;
+      }
+      .large {
+        font-style: italic;
+        font-size: xx-large;
+        font-weight: 500;
+      }
+      .as {
+        margin-right: 40px;
+      }
+      .name {
+        font-size: medium;
+      }
+    </style>
+  </head>
+  <body>
+    <img
+      src="./assets/floer svg.svg"
+      alt="flower-top-left-svg"
+      class="flower flower-top-left fade-in"
+    />
+    <img src="./assets/floer svg.svg" alt="flower-svg" class="flower fade-in" />
+    <div class="bg-canvas">
+      <div class="canvas canvas-hidden">
+        <div id="invitation">
+          <p class="intro-text large gulzar-regular">سمانه و امید</p>
+          <p class="intro-text gulzar-regular">
+            به سنت عشق گردهم می‌آییم آنجا که دوست داشتن تنها کلام زندگی‌ست
+          </p>
+          <p class="intro-text gulzar-regular">
+            حضور شما خاطره این جشن را جاودانه می‌سازد.
+          </p>
+
+          <p class="final-text st gulzar-regular">پنجشنبه 20 شهریور ماه 1404</p>
+          <p class="final-text nd gulzar-regular">
+            ساعت 19 تا23 اردبیل هتل نگین
+          </p>
+          <div class="final-text rd">
+            <p class="gulzar-regular">نیک نفس</p>
+            <p class="gulzar-regular as">عسلی</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Delays (in milliseconds)
+        const FLOWER_DELAY = 1000;
+        const CANVAS_DELAY = 2000;
+        const TEXT_START_DELAY = 3000;
+        const INTRO_LINE_DELAY = 2500;
+        const FINAL_LINE_DELAY = 2500;
+        const FADE_OUT_DELAY = 2000;
+
+        const flowers = document.querySelectorAll(".fade-in");
+        const canvas = document.querySelector(".canvas");
+        const introTexts = document.querySelectorAll(".intro-text");
+        const finalTexts = document.querySelectorAll(".final-text");
+
+        setTimeout(() => {
+          flowers.forEach((flower) => (flower.style.opacity = "1"));
+        }, FLOWER_DELAY);
+
+        setTimeout(() => {
+          canvas.classList.add("canvas-show");
+        }, CANVAS_DELAY);
+
+        setTimeout(() => showIntroLine(0), TEXT_START_DELAY);
+
+        function showIntroLine(index) {
+          if (index < introTexts.length) {
+            introTexts[index].classList.add("show");
+            setTimeout(() => showIntroLine(index + 1), INTRO_LINE_DELAY);
+          } else {
+            setTimeout(() => {
+              introTexts.forEach((t) => t.classList.remove("show"));
+              setTimeout(() => showFinalText(0), FADE_OUT_DELAY);
+            }, INTRO_LINE_DELAY);
+          }
+        }
+
+        function showFinalText(index) {
+          if (index < finalTexts.length) {
+            finalTexts[index].classList.add("show");
+            setTimeout(() => showFinalText(index + 1), FINAL_LINE_DELAY);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
